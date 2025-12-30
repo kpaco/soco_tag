@@ -1,0 +1,127 @@
+SWID00SW1D	VEND0R	SWN@ME V0ERS RHEL CHK
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\\vw.vwg\vwdfs\VWN\NF\2805\Groups\33a_SPZ_extern\01-Erfasst\SIWD00SW1D 	<<< check/edit path
+
+[13.12.2025][KIV]: Started the test as normal check
+
+SW Name: 		SWN@ME
+Manufaturer:	VEND0R
+Ver: 			V0ERS
+
+Prev. tst: << 	
+
+SW descr.:		
+
+Setup folder: 	SWID00SW1D_VEND0R_-_SWN@ME_V0ERS
+
+sc mod nam.: 	SWN@ME_V0ERS
+
+requestor: 		
+machine:	
+
+<prereq.:>
+
+
+#~~~~~~~# ### Running SPZ script and saving logs ### #~~~~~~~#	#~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~#
+- mount the smb share "smb://vw.vwg/vwdfs/vwn/nf/2805/groups/33a_SPZ_extern" via FM/gui ||	   ##( sudo mount -t cifs //server_ip_or_hostname/share_name /33a_SPZ_extern -o username=fov6vdw,password=the_password,vers=3 )
+
+- in 	\\vw.vwg\vwdfs\VWN\NF\2805\Groups\33a_IT-Sicherheit_CERT-VWN_Extern_SPZ-Eingangsordner
+  ren setup folder as: SWID00SW1D_VEND0R_-_SWN@ME_V0ERS
+  cut it & paste in  \\vw.vwg\vwdfs\VWN\NF\2805\Groups\33a_SPZ_extern\01-Erfasst
+  
+- from Tools \\vw.vwg\vwdfs\VWN\NF\2805\Groups\33a_SPZ_extern\20-Tools
+	run TestEnv-Update.cmd script [as normal usr <optional if not already done>]
+
+- in 	\\vw.vwg\vwdfs\VWN\NF\2805\Groups\33a_IT-Sicherheit_CERT-VWN_Extern_SPZ-Eingangsordner
+  ren setup folder as:SWID00SW1D_VEND0R_-_SWN@ME_V0ERS
+  cut it & paste in  \\vw.vwg\vwdfs\VWN\NF\2805\Groups\33a_SPZ_extern\01-Erfasst
+
+- from \\vw.vwg\vwdfs\VWN\NF\2805\Groups\33a_SPZ_extern\30-Vorlagen\Auftragsvorlage
+   copy all and paste into  \\vw.vwg\vwdfs\VWN\NF\2805\Groups\33a_SPZ_extern\01-Erfasst\SWID00SW1D_VEND0R_-_SWN@ME_V0ERS
+   
+#~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~#
+
+- sudo dnf update
+
+- sudo ./mount.sh	## [from /spz_wrks]
+
+- sudo ./SoCo.sh 	## [from /spz_wrks .. <sudo mkdir /spz_wrks; cp ~/Desktop/SoCo.* soco.* /spz_wrks > ]
+
+- in SPZ script console input the SW1D [the SWID id without the prefix]:
+   Job > SW1D
+
+- in SPZ console hit ` 1 `   
+  > 1
+	> choose net adapter [ 4 - eternet if on Hyper-V] 
+
+- Install the software:
+  ########### - sudo mkdir /usr/bin/SWN@ME; sudo chown -R fov6vdw:fov6vdw /usr/bin/SWN@ME;
+  sudo /usr/bin/SWN@ME/<xxx.run>  		## Execute the setup with sudo rights.
+  ## [the executable are taken from \\vw.vwg\vwdfs\VWN\NF\2805\Groups\33a_SPZ_extern\01-Erfasst\SWID00SW1D_VEND0R_-_SWN@ME_V0ERS\30-Setup
+	## -> Choose installation directory “/usr/bin/SWN@ME/” 	##
+
+  ########### 
+	
+- Actual Test / Examine the sw (look for execution of code options, Cloud functionality)
+
+- close app
+ 
+- in SPZ console hit ` 1 ` to stop the testing
+
+- in SPZ script console hit ` 2 ` to transfer the output files 
+	to \\vw.vwg\vwdfs\VWN\NF\2805\Groups\33a_SPZ_extern\01-Erfasst\SWID00SW1D_VEND0R_-_SWN@ME_V0ERS\50-Sicherheitsüberprüfung
+
+
+#~~~~~~~# ### Components & CVEs ### #~~~~~~~# #~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~#
+
+
+
+
+
+#~~~~~~~# ### Network Connections || Listeners || UDP sockets ### #~~~~~~~# #~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~#
+--- !!! always save Fileanalyze.xxx !!! ---
+
+## Network Connections >	
+cat Ports-Filtered-1.txt | grep fov6vdw | egrep -iv 'removed|listening|udp|wireshark|nessus-agent'
+
+#####awk '{for(i=5;i<=NF;i++) printf "%s%s",$i,(i<NF?OFS:ORS)}' network-connections.txt
+
+## listeners > 
+cat Ports-Filtered-1.txt | egrep -i listen | grep -vi remove > listening.txt
+#awk '{for(i=5;i<=NF;i++) printf "%s%s",$i,(i<NF?OFS:ORS)}' listening.txt > listen
+cat listen | egrep -v '::' | sort > listening.txt 
+
+## UDP > 
+cat Ports-Filtered-1.txt | egrep -i udp | grep -vi remove
+
+ 
+
+
+#~~~~~~~# ### Usage Conditions ### #~~~~~~~# .. 
+- The software has known vulnerabilities (see chapter Restrictions->CVEs), So a regular vulnerability scan for this software must be carried out by the responsible body. 
+  It must be ensured that the entity responsible for the software lifecycle can be informed about security vulnerabilities. 
+  Furthermore, the body responsible for the software lifecycle must establish a process for this software on how to circumvent the security gaps by specification of the information security regulations.
+---------------------------------------------------------------------------------------------------
+- While running the software, make sure that incoming communication is blocked by an active firewall.
+  The application may only be started via the CAE calculation environment. Under Linux these are the programs under /applbin and under Windows the programs in the CAE Suite start menu entry. 
+  No changes may be made to the calling scripts of the applications.
+---------------------------------------------------------------------------------------------------
+- Java/Perl/Python supplied with the software may only be used within the framework of this software. 
+  The installation of additional Java packages or the use other than within the context of this software is not permitted.
+---------------------------------------------------------------------------------------------------
+- The software is a programming or scripting environment.
+  Any scripts or programs developed using this environment must undergo an additional compliance regulation check.
+---------------------------------------------------------------------------------------------------
+- A valid and positive Cloud Intel Assessment for this use case is required to use the cloud features of this software.
+---------------------------------------------------------------------------------------------------
+- Only internal or approved ser2023.1 may be used for the db host(s).
+---------------------------------------------------------------------------------------------------
+- It is forbidden to use the manual update function.
+---------------------------------------------------------------------------------------------------
+- The following checkbox about ‘checking for updates on system startup’ must be unchecked. 
+---------------------------------------------------------------------------------------------------
+- The installation of additional [Addons/Extensions/Plugins] is only allowed for verified packages from internal sources.
+---------------------------------------------------------------------------------------------------
+- It is not allowed to open a server with the Python package supplied with the Software PowerFlow.
+---------------------------------------------------------------------------------------------------
+- Only encrypted protocols may be used (SSH)
