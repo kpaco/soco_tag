@@ -1,0 +1,220 @@
+SWID00SW1D	VEND0R	SWN@ME V0ERS Win CHK
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\\vw.vwg\vwdfs\VWN\NF\2805\Groups\33a_SPZ_extern\01-Erfasst\SIWD00SW1D 	<<< check/edit path
+
+[13.12.2025][KIV]: Started the test as normal check
+
+SW Name: 		SWN@ME
+Manufaturer:	VEND0R
+Ver: 			V0ERS
+
+Prev. tst: << 	
+
+SW descr.:		
+
+Setup folder: 	SWID00SW1D_VEND0R_-_SWN@ME_V0ERS
+
+sc mod nam.: 	SWN@ME_V0ERS
+
+requestor: 		
+machine:	
+
+<prereq.:>
+
+
+#~~~~~~~# ### Running SPZ script and saving logs ### #~~~~~~~#	#~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~#
+
+- from Tools \\vw.vwg\vwdfs\VWN\NF\2805\Groups\33a_SPZ_extern\20-Tools
+	run TestEnv-Update.cmd script [as normal usr <optional if not already done>]
+
+- in 	\\vw.vwg\vwdfs\VWN\NF\2805\Groups\33a_IT-Sicherheit_CERT-VWN_Extern_SPZ-Eingangsordner
+  ren setup folder as: SWID00SW1D_VEND0R_-_SWN@ME_V0ERS
+  cut it & paste in  \\vw.vwg\vwdfs\VWN\NF\2805\Groups\33a_SPZ_extern\01-Erfasst
+
+- from \\vw.vwg\vwdfs\VWN\NF\2805\Groups\33a_SPZ_extern\30-Vorlagen\Auftragsvorlage
+   copy all and paste into  \\vw.vwg\vwdfs\VWN\NF\2805\Groups\33a_SPZ_extern\01-Erfasst\SWID00SW1D_VEND0R_-_SWN@ME_V0ERS
+   
+   - from (dsktp>>) C:\TestEnv launch the SPZ script with Admin privileges
+
+- in SPZ script console input the SWID ID without [SWID00 prefix]:
+   Job > SW1D
+   
+    ## if zScaler is runnig for some reason lock the session and logon with Admin to stop zScaler (taskbar icon >> exit)
+
+- IN to install Npcap [1.79]
+
+- in SPZ console hit ` 1 `   
+  > 1
+    ## export of FW rules is triggered [xxx rules] .. && Regshot is started && autoruns fetch ## pick 's' to skip AV scan
+	
+- in Regshot hit [1st shot] button
+   upon completion save res. as  rs_pre_inst
+
+- in SPZ console hit ` 2 ` [if already saved rs_pre_inst ] &&
+  > choose net adapter [ 4 - eternet if on Hyper-V] 
+
+- Install the software:
+  run xxx.exe from a local dir
+	[the executable are taken from \\vw.vwg\vwdfs\VWN\NF\2805\Groups\33a_SPZ_extern\01-Erfasst\SWIDSW1D_VEND0R_-_SWN@me_V0ERS\30-Setup
+
+- Actual Test / Examine the sw (look for execution of code options, Cloud functionality)
+
+- close app
+ 
+- save ProcMon logfile into C:\Temp\SW1D\temp\Logfile.PML
+  save it also in csv format: @wrk dir Logfile.csv
+
+- from CurPorts choose `Open Log File` & save as C:\Temp\SWID00SW1D\Temp\cports.log 	&& close CurrPorts
+
+- close Tshark
+
+- in Regshot hit [2nd shot] button -> upon completing the action save file as `rs_post_inst`
+
+- in RegShot click on cOmpare & in the pop-up save output file as ~res-x64.txt [@  C:\Temp\SWID00SW1D\Temp]
+ 
+- in SPZ console hit ` 3 ` to stop the testing	[creating post inst. autoruns & exports Firewall rules (569) & starts the stopped svcs]
+
+- in SPZ console hit ` 4 ` for log4j scan
+
+- in SPZ console hit ` 5 ` to copy results in the des. folder (pcap also will appear now into the dir)	
+  && - in SPZ hit ` x ` for end (optional)
+
+- from C:\temp\SWID\Temp  copy all and paste it to C:\temp\SWID\Results
+
+- from copy all && 
+   paste it into `50-Sicherheitsüberprüfung`  with overwrite older items 
+   \\vw.vwg\vwdfs\VWN\NF\2805\Groups\33a_SPZ_extern\01-Erfasst\SWIDSW1D_VEND0R_-_SWN@ME_V0ER\50-Sicherheitsüberprüfung
+	 ..\01-Erfasst\
+
+
+
+
+#~~~~~~~# ### Components & CVEs ### #~~~~~~~# #~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~#
+  
+- from  ComponentScanner folder right-click on file SoCo_ComponentsTools.ps1 and select `Show more options` -> & choose ` edit `
+   it will open file in PS (without executing)
+   
+- run the script [ press |> or F5 ]
+
+- ### 	~ >	 Read-Components -File Components.json | sort-components | print-components -showpath | Measure-Object -Line
+ read-Components -File Components.json | sort-components | export-componentstocsv
+ 
+
+
+
+
+#~~~~~~~# ### Network Connections || Listeners || UDP sockets ### #~~~~~~~# #~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~#
+--- !!! always save Fileanalyze.xxx !!! ---
+
+from FileAnalyzeW10 file `File` sheet 'Pfad' column copy all exe files into 50-xxx allfiles.txt 
+	&& remove uninstall.exe
+	copy allfiles.txt in ..TestEnv\Prereq
+@ test Machine:	
+	in cmd: set-executionpolicy -executionpolicy unrestricted -scope currentuser -force		## [ should be unrestricted | remotesigned ]
+	SPZ -> ` 2 ` # to start tools
+	startExefromList.ps1	# right-click run w PS
+	
+cat cports* | egrep -iv 'removed|listening|udp|mpcmdrun|runtimebroker|msedgewebview2|xagt.exe|ZSATray|wireshark|edgeupdate|nessus-agent|widgets|microsoft.management|experience.host|ndlaunch|PFERemediation|mousocorework|onedrive|excel' 
+
+#####awk '{for(i=5;i<=NF;i++) printf "%s%s",$i,(i<NF?OFS:ORS)}' network-connections.txt
+
+## listeners :  cat cports* | egrep -i listen | grep -vi remove > listening.txt
+awk '{for(i=5;i<=NF;i++) printf "%s%s",$i,(i<NF?OFS:ORS)}' listening.txt > listen
+cat listen | egrep -v '::' | sort > listening.txt 
+
+## UDP : cat cports* | egrep -i udp | grep -vi remove
+
+ 
+ 
+ 
+#~~~~~~~##~~~~~~~# ### SC Modify ### #~~~~~~~# .. [143310-Meeting Recording @ 1:00:00]		#~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~##~~~~~~~#
+--- SC mod will: 1) block programs app1.exe && 2) apply foder permissions to dirs ---
+
+ 1. block: <app1.exe, rmid, rmiregistry>
+ 
+SPZ-script -> run step ` 1 `
+SPZ-script -> run  ` G `
+
+ ## naming conv.:	[SC] SWN@ME xxx.exe Block			C:\path\subdir\xxx.exe
+
+					
+ 2.	set VW std folder permsissions on C:\xxx
+
+- from TestEnv run Create-Modify.cmd & => copy into anpassung.ps1 file the follow. code   [~~~ sc mod nam.: AVL_Oracle_19.27]
+
+## Eine Liste mit Pfaden / VW td. set of permssions => copy into anpassung.ps1 file !!!
+$DirectoryNames     = "C:\oracle_database","C:\oracle_client" # Bitte den Kompletten Pfad eintragen.
+
+foreach ($DirectoryName in $DirectoryNames) {
+    
+    if (Test-Path -LiteralPath $DirectoryName) {
+        $StandardPermissions = Get-Acl -Path $Env:Programfiles
+        $StandardPermissions.SetAccessRuleProtection($true,$false)
+        Write-Host ("Please wait. Scan folder {0}" -f $DirectoryName)
+        $CompletelyFolderStructure = Get-ChildItem -Recurse -LiteralPath $DirectoryName
+        Write-Host "Please wait. Set permission..."
+        try {
+            Set-Acl -AclObject $StandardPermissions -LiteralPath $DirectoryName
+        }
+        catch {
+            Write-Host -ForegroundColor Red ("An error occurred while trying to set the permission.`n{0} permission not set`nPlease Contact: SOFTWARECOMPLIANCE@VOLKSWAGEN.DE" -f $DirectoryName)
+            return
+        }
+        $SetPermissonError	=	$null
+        $i=1
+        foreach ($C in $CompletelyFolderStructure) {        
+            try {
+                $Percent = (($i++*100) / $CompletelyFolderStructure.Count)
+                Write-Progress -Activity ("Complete {0:###}% Set permission:" -f $Percent) -Status $C.Name -PercentComplete $Percent
+                Set-Acl -AclObject $StandardPermissions -LiteralPath $C.FullName                   
+            }
+            catch {
+                $SetPermissonError	+=	$C.FullName + "`n"
+            }		
+        }
+        if ($SetPermissonError) {
+            Write-Host -ForegroundColor Red "An error occurred while trying to set the permission."
+            "{0}" -f $SetPermissonError
+            Write-Host "permission not set`nPlease Contact: SOFTWARECOMPLIANCE@VOLKSWAGEN.DE"
+        }
+        else {
+            Write-Host "finished" -ForegroundColor Green
+        }
+    }
+    else {
+        Write-Host -ForegroundColor Red ("Error. Path not found {0}.`nPlease Contact: SOFTWARECOMPLIANCE@VOLKSWAGEN.DE" -f $DirectoryName)        
+    }
+} 
+
+SPZ-script -> run  ` N `	## to create newrule.txt
+from New_SC-Modify folder run Create-Modify.cmd
+name the modify: SWN@ME_V1ER
+
+## !!! test the modifications 
+ 
+- copy the sc-mod folder from desktop to 60-SPZ-anpassung
+- from 60-SPZ-anpassung copyl all SC-* and paste into 30-Setup dir  & make the SHA-256
+
+
+
+#~~~~~~~# ### <possible> Usage Conditions ### #~~~~~~~# .. 
+- The software has known vulnerabilities (see chapter Restrictions->CVEs), So a regular vulnerability scan for this software must be carried out by the responsible body. 
+  It must be ensured that the entity responsible for the software lifecycle can be informed about security vulnerabilities. 
+  Furthermore, the body responsible for the software lifecycle must establish a process for this software on how to circumvent the security gaps by specification of the information security regulations.
+---------------------------------------------------------------------------------------------------
+- Java/Perl/Python supplied with the software may only be used within the framework of this software. 
+  The installation of additional Java packages or the use other than within the context of this software is not permitted.
+---------------------------------------------------------------------------------------------------
+- A valid and positive Cloud Vendor Assessment for this use case is required to use the cloud features of this software.
+---------------------------------------------------------------------------------------------------
+- Only internal or approved servers may be used for the db host(s).
+---------------------------------------------------------------------------------------------------
+- It is forbidden to use the manual update function.
+---------------------------------------------------------------------------------------------------
+- The following checkbox about ‘checking for updates on system startup’ must be unchecked. 
+---------------------------------------------------------------------------------------------------
+- The installation of additional [Addons/Extensions/Plugins] is only allowed for verified packages from internal sources.
+---------------------------------------------------------------------------------------------------
+- It is not allowed to open a server with the Python package supplied with the Software PowerFlow.
+---------------------------------------------------------------------------------------------------
+- Only encrypted protocols may be used (SSH)
